@@ -5,14 +5,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-   
-    "start": "vite preview --host 0.0.0.0 --port $PORT"
+    "preview": "vite preview",
+    "start": "serve -s dist",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "clsx": "^2.1.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.6",
+    "serve": "^14.2.5",
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
