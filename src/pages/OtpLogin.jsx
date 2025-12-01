@@ -15,7 +15,8 @@ export default function OtpLogin() {
     setGeneratedOtp(otp);
 
     try {
-      const res = await fetch("http://localhost:5000/api/send-otp", {
+      const res = await fetch("https://backend-production-146f.up.railway.app/api/send-otp"
+, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
