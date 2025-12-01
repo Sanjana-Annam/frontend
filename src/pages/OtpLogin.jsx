@@ -3,23 +3,20 @@ import { useNavigate } from "react-router-dom";
 
 export default function OtpLogin() {
   const [email, setEmail] = useState("");
-  const [generatedOtp, setGeneratedOtp] = useState("");
   const [userOtp, setUserOtp] = useState("");
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
+  const API_BASE = "https://backend-production-3e7d.up.railway.app";
+
   const sendOtp = async () => {
     if (!email) return alert("Enter email");
 
-    const otp = Math.floor(1000 + Math.random() * 9000).toString();
-    setGeneratedOtp(otp);
-
     try {
-      const res = await fetch("https://backend-production-24e7.up.railway.app/api/send-otp"
-, {
+      const res = await fetch(`${API_BASE}/api/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({ email }),
       });
 
       const data = await res.json();
@@ -35,13 +32,27 @@ export default function OtpLogin() {
     }
   };
 
-  const verifyOtp = () => {
-    if (userOtp === generatedOtp) {
-      localStorage.setItem("userEmail", email);
-      window.dispatchEvent(new Event("storage"));
-      navigate("/dashboard");
-    } else {
-      alert("Invalid OTP ❌");
+  const verifyOtp = async () => {
+    if (!userOtp) return alert("Enter OTP");
+
+    try {
+      const res = await fetch(`${API_BASE}/api/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp: userOtp }),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 200) {
+        localStorage.setItem("userEmail", email);
+        window.dispatchEvent(new Event("storage"));
+        navigate("/dashboard");
+      } else {
+        alert("Invalid OTP ❌");
+      }
+    } catch (error) {
+      alert("Server error ❌");
     }
   };
 

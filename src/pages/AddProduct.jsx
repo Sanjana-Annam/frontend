@@ -9,11 +9,21 @@ export default function AddProduct() {
   const [image, setImage] = useState(null);
   const [sellerName, setSellerName] = useState("");
   const [sellerPhone, setSellerPhone] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
+  const API_BASE = "https://backend-production-3e7d.up.railway.app"; // same backend used in marketplace
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (sellerPhone.length < 10) {
+      return alert("Seller phone number must be 10 digits 📞");
+    }
+
+    setLoading(true);
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("price", price);
@@ -23,15 +33,25 @@ export default function AddProduct() {
     formData.append("sellerPhone", sellerPhone);
     formData.append("image", image);
 
-    await fetch("https://backend-production-24e7.up.railway.app/add-product"
-, {
+    try {
+      const res = await fetch(`${API_BASE}/api/add-product`, {
+        method: "POST",
+        body: formData,
+      });
 
-      method: "POST",
-      body: formData,
-    });
+      const data = await res.json();
 
-    alert("Product Added Successfully! 🎉 Redirecting...");
-    navigate("/marketplace");
+      if (res.status === 200) {
+        alert("🎉 Product Added Successfully!");
+        navigate("/marketplace");
+      } else {
+        alert(`❌ Failed to add product\nReason: ${data?.message}`);
+      }
+    } catch (error) {
+      alert("❌ Server Error - Try again");
+    }
+
+    setLoading(false);
   };
 
   const inputClass =
@@ -60,7 +80,7 @@ export default function AddProduct() {
           <div>
             <label className="text-lg font-medium text-gray-800">Seller Mobile Number</label>
             <input
-              type="text"
+              type="number"
               className={inputClass}
               value={sellerPhone}
               onChange={(e) => setSellerPhone(e.target.value)}
@@ -124,10 +144,14 @@ export default function AddProduct() {
           </div>
 
           <button
-            className="w-full py-3 text-xl font-semibold rounded-2xl bg-purple-600 text-white 
-                       hover:bg-purple-700 hover:shadow-xl active:scale-95 transition-all duration-300"
+            disabled={loading}
+            className={`w-full py-3 text-xl font-semibold rounded-2xl text-white transition-all duration-300 ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-purple-600 hover:bg-purple-700 hover:shadow-xl active:scale-95"
+            }`}
           >
-            🚀 Upload Product
+            {loading ? "⏳ Uploading..." : "🚀 Upload Product"}
           </button>
         </form>
       </div>

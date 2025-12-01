@@ -4,30 +4,38 @@ export default function Marketplace() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const API_BASE = "https://backend-production-3e7d.up.railway.app";
 
   useEffect(() => {
-    fetch("https://backend-production-24e7.up.railway.app/products")
-
-
-      .then(res => res.json())
-      .then(data => setProducts(data));
+    fetch(`${API_BASE}/api/products`)
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load products ❌");
+        setLoading(false);
+      });
   }, []);
 
   const filtered = products.filter((p) => {
-    const matchesCategory = category === "All" || p.category.toLowerCase() === category.toLowerCase();
+    const matchesCategory = category === "All" || p.category?.toLowerCase() === category.toLowerCase();
     const matchesSearch =
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.desc.toLowerCase().includes(search.toLowerCase());
+      p.title?.toLowerCase().includes(search.toLowerCase()) ||
+      p.desc?.toLowerCase().includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   const categories = ["All", "Handicraft", "Clothing", "Food", "Home Decor", "Accessories"];
 
-  // Replace with the business WhatsApp number (with country code)
-  const WHATSAPP_NUMBER = "917028858162"; // example: 91 + mobile number
+  const WHATSAPP_NUMBER = "917028858162";
 
   const sendToWhatsApp = (product) => {
-    const msg = `Hello, I am interested in buying this product:\n\n🛍 *${product.title}*\n💰 Price: ₹${product.price}\n📦 Category: ${product.category}\n\nMore details: ${product.desc}\n\nPlease guide me for ordering.`;
+    const msg = `Hello, I am interested in buying this product:\n\n🛍 *${product.title}*\n💰 Price: ₹${product.price}\n📦 Category: ${product.category}\n👩 Seller: ${product.sellerName}\n📞 Contact: ${product.sellerPhone}\n\nMore details: ${product.desc}\n\nPlease guide me for ordering.`;
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
     window.open(url, "_blank");
   };
@@ -67,48 +75,53 @@ export default function Marketplace() {
         ))}
       </div>
 
+      {/* Status Handling */}
+      {loading && <p className="text-center text-gray-600 text-xl">Loading products ⏳...</p>}
+      {error && <p className="text-center text-red-500 text-xl">{error}</p>}
+
       {/* Product Cards */}
-      {filtered.length === 0 ? (
-        <p className="text-center text-gray-600 text-xl">No matching products found 🔍</p>
-      ) : (
-        <div className="grid md:grid-cols-3 gap-12">
-          {filtered.map((p, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-2xl shadow-xl p-5 hover:shadow-2xl transition transform hover:-translate-y-1"
-            >
-              <img
-                src={p.image}
-                alt={p.title}
-                className="rounded-xl h-64 w-full object-cover shadow"
-              />
-              <h3 className="text-2xl font-bold mt-4 text-purple-700">{p.title}</h3>
-              <p className="text-gray-600 mt-2 leading-relaxed">{p.desc}</p>
-
-              <div className="flex justify-between items-center mt-4">
-                <div className="mt-3 text-gray-700 text-sm">
-                    👩 Seller: <span className="font-semibold text-purple-700">{p.sellerName}</span>
-                  </div>
-                  <div className="text-gray-700 text-sm">
-                    📞 Contact: <span className="font-semibold">{p.sellerPhone}</span>
-                  </div>
-
-                <span className="text-xl font-semibold text-gray-900">₹ {p.price}</span>
-                <span className="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
-                  {p.category}
-                </span>
-              </div>
-
-              {/* WhatsApp Order Button */}
-              <button
-                onClick={() => sendToWhatsApp(p)}
-                className="mt-5 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl text-lg font-semibold flex justify-center gap-2 items-center transition focus:ring-4 ring-green-300"
+      {!loading && !error && (
+        filtered.length === 0 ? (
+          <p className="text-center text-gray-600 text-xl">No matching products found 🔍</p>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-12">
+            {filtered.map((p, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl shadow-xl p-5 hover:shadow-2xl transition transform hover:-translate-y-1"
               >
-                <span>📩 Order on WhatsApp</span>
-              </button>
-            </div>
-          ))}
-        </div>
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  className="rounded-xl h-64 w-full object-cover shadow"
+                />
+                <h3 className="text-2xl font-bold mt-4 text-purple-700">{p.title}</h3>
+                <p className="text-gray-600 mt-2 leading-relaxed">{p.desc}</p>
+
+                <div className="mt-4 text-gray-700 text-sm space-y-1">
+                  👩 Seller: <span className="font-semibold text-purple-700">{p.sellerName}</span>
+                  <br />
+                  📞 Contact: <span className="font-semibold">{p.sellerPhone}</span>
+                </div>
+
+                <div className="flex justify-between items-center mt-4">
+                  <span className="text-xl font-semibold text-gray-900">₹ {p.price}</span>
+                  <span className="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
+                    {p.category}
+                  </span>
+                </div>
+
+                {/* WhatsApp Order Button */}
+                <button
+                  onClick={() => sendToWhatsApp(p)}
+                  className="mt-5 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl text-lg font-semibold flex justify-center gap-2 items-center transition focus:ring-4 ring-green-300"
+                >
+                  <span>📩 Order on WhatsApp</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        )
       )}
     </section>
   );
