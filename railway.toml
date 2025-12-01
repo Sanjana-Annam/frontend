@@ -1,0 +1,11 @@
+[build]
+# folder that contains your Node backend code
+root = "backend"
+
+[deploy]
+# command Railway should run to start your server
+start = "npm start"
+
+[env]
+# Railway will assign the actual PORT at runtime
+PORT = "5000"
