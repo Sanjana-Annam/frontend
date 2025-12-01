@@ -5,7 +5,8 @@
   "scripts": {
   "dev": "vite",
   "build": "vite build",
-  "start": "vite preview --port $PORT --host 0.0.0.0"
+  "start": "node -e \"require('vite').preview({ host: '0.0.0.0', port: process.env.PORT })\""
+
 }
 ,
   "dependencies": {
