@@ -6,7 +6,7 @@ export default function Marketplace() {
   const [category, setCategory] = useState("All");
 
   useEffect(() => {
-    fetch("https://backend-production-146f.up.railway.app/products")
+    fetch("https://backend-production-24e7.up.railway.app/products")
 
 
       .then(res => res.json())

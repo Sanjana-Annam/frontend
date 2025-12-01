@@ -23,7 +23,7 @@ export default function AddProduct() {
     formData.append("sellerPhone", sellerPhone);
     formData.append("image", image);
 
-    await fetch("https://backend-production-146f.up.railway.app/add-product"
+    await fetch("https://backend-production-24e7.up.railway.app/add-product"
 , {
 
       method: "POST",
