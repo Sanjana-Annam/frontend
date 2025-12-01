@@ -1,21 +1,20 @@
 {
   "name": "weep-website",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
     "start": "serve -s dist -l $PORT"
   },
   "dependencies": {
+    "serve": "^14.2.5",
     "clsx": "^2.1.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.6",
-    "tailwindcss": "^4.1.17",
-    "serve": "^14.2.5"
+    "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
