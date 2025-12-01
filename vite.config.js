@@ -3,12 +3,8 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    host: "0.0.0.0",                  // allow external connections
-    port: process.env.PORT || 8080,  // use Railway PORT
-  },
   preview: {
     host: "0.0.0.0",
-    port: process.env.PORT || 8080,
+    port: process.env.PORT ? Number(process.env.PORT) : 8080,
   },
 });
