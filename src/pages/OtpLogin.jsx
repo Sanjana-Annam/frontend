@@ -7,7 +7,8 @@ export default function OtpLogin() {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
-  const API_BASE = "https://backend-production-3e7d.up.railway.app";
+  // Read backend URL from .env
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
   const sendOtp = async () => {
     if (!email) return alert("Enter email");
@@ -25,7 +26,7 @@ export default function OtpLogin() {
         alert("OTP sent successfully 📩");
         setStep(2);
       } else {
-        alert(`Failed to send OTP ❌ \nReason: ${data.message}`);
+        alert(`Failed ❌: ${data.message}`);
       }
     } catch (error) {
       alert("Server error ❌");
