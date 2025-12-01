@@ -3,12 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "start": "node -e \"require('vite').preview({ host: '0.0.0.0', port: process.env.PORT })\""
-
-}
-,
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite preview --host 0.0.0.0 --port ${PORT:-8080}" 
+  },
   "dependencies": {
     "clsx": "^2.1.1",
     "react": "^19.2.0",
