@@ -1,93 +1,59 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import API_BASE_URL from "../config";   // <-- import backend URL
+import axios from "axios";
+import API_BASE_URL from "../config";
 
 export default function OtpLogin() {
   const [email, setEmail] = useState("");
-  const [userOtp, setUserOtp] = useState("");
-  const [step, setStep] = useState(1);
-  const navigate = useNavigate();
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
 
   const sendOtp = async () => {
-    if (!email) return alert("Enter email");
-
+    if (!email) return alert("Enter email first");
     try {
-      const res = await fetch(`${API_BASE_URL}/api/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
-
-      if (res.status === 200) {
-        alert("OTP sent successfully 📩");
-        setStep(2);
-      } else {
-        alert(`Failed ❌: ${data.message}`);
-      }
-    } catch (error) {
-      alert("Server error ❌");
+      const res = await axios.post(`${API_BASE_URL}/send-otp`, { email });
+      alert("OTP sent to email ✔");
+      setOtpSent(true);
+    } catch (err) {
+      alert("❌ Failed to send OTP: " + (err.response?.data?.message || "Server error"));
     }
   };
 
   const verifyOtp = async () => {
-    if (!userOtp) return alert("Enter OTP");
-
+    if (!email || !otp) return alert("Enter both email and OTP");
     try {
-      const res = await fetch(`${API_BASE_URL}/api/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: userOtp }),
-      });
-
-      const data = await res.json();
-
-      if (res.status === 200) {
-        localStorage.setItem("userEmail", email);
-        window.dispatchEvent(new Event("storage"));
-        navigate("/dashboard");
-      } else {
-        alert("Invalid OTP ❌");
-      }
-    } catch (error) {
-      alert("Server error ❌");
+      const res = await axios.post(`${API_BASE_URL}/verify-otp`, { email, otp });
+      alert("Login Success ✔");
+      localStorage.setItem("token", res.data.token);
+      window.location.href = "/dashboard";
+    } catch (err) {
+      alert("❌ Invalid OTP");
     }
   };
 
   return (
-    <section className="min-h-screen flex justify-center items-center bg-purple-100">
-      <div className="bg-white p-8 shadow-xl rounded-xl w-[90%] max-w-md">
-        <h2 className="text-3xl font-bold text-purple-700 text-center mb-5">Login with OTP</h2>
+    <div className="login-box">
+      <h2>Login with OTP</h2>
+      <input
+        type="email"
+        placeholder="Enter Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
-        {step === 1 && (
-          <>
-            <input
-              type="email"
-              className="w-full border p-3 rounded-lg mb-4"
-              placeholder="example@gmail.com"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button onClick={sendOtp} className="w-full bg-purple-600 text-white py-3 rounded-lg">
-              Send OTP
-            </button>
-          </>
-        )}
+      {otpSent && (
+        <input
+          type="text"
+          placeholder="Enter OTP"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+        />
+      )}
 
-        {step === 2 && (
-          <>
-            <input
-              type="number"
-              className="w-full border p-3 rounded-lg mb-4"
-              placeholder="Enter OTP"
-              onChange={(e) => setUserOtp(e.target.value)}
-            />
-            <button onClick={verifyOtp} className="w-full bg-purple-600 text-white py-3 rounded-lg">
-              Verify OTP
-            </button>
-          </>
-        )}
-      </div>
-    </section>
+      {!otpSent ? (
+        <button onClick={sendOtp}>Send OTP</button>
+      ) : (
+        <button onClick={verifyOtp}>Verify OTP</button>
+      )}
+    </div>
   );
 }
