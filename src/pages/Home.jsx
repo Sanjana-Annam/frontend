@@ -42,7 +42,7 @@ export default function Home() {
           {/* Hero Image */}
           <div className="flex justify-center">
             <img
-              src="/img.png"
+              src="./public/img.png"
               alt="Women Training"
               className="rounded-3xl shadow-2xl w-full max-h-[450px] object-cover border-4 border-white"
             />

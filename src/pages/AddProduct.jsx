@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
+import API_BASE_URL from "../config";   // <-- using config.js
 
 export default function AddProduct() {
   const [formData, setFormData] = useState({
@@ -10,8 +12,6 @@ export default function AddProduct() {
     sellerPhone: "",
   });
   const [image, setImage] = useState(null);
-
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
   const handleInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,18 +26,18 @@ export default function AddProduct() {
     data.append("image", image);
 
     try {
-      const res = await fetch(`${API_BASE}/add-product`, {
-        method: "POST",
-        body: data,
+      const res = await axios.post(`${API_BASE_URL}/add-product`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (res.status === 201) {
         alert("Product uploaded successfully 🎉");
       } else {
-        alert("Failed to upload ❌");
+        alert("Upload failed ❌");
       }
     } catch (error) {
       alert("Server error ❌");
+      console.error(error);
     }
   };
 
@@ -46,13 +46,14 @@ export default function AddProduct() {
       onSubmit={submitProduct}
       className="max-w-2xl mx-auto p-8 space-y-5 bg-white shadow rounded-xl"
     >
-      <h2 className="text-3xl font-bold text-purple-700 text-center mb-4">Add Product</h2>
+      <h2 className="text-3xl font-bold text-purple-700 text-center mb-4">
+        Add Product
+      </h2>
 
       {["title", "price", "desc", "category", "sellerName", "sellerPhone"].map((field) => (
         <input
           key={field}
           name={field}
-          type="text"
           required
           placeholder={field}
           onChange={handleInput}

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
+import API_BASE_URL from "../config"; // <-- backend URL from config.js
 
 export default function Marketplace() {
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
-
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
@@ -10,7 +9,7 @@ export default function Marketplace() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`${API_BASE}/products`)
+    fetch(`${API_BASE_URL}/products`)
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);
@@ -23,7 +22,8 @@ export default function Marketplace() {
   }, []);
 
   const filtered = products.filter((p) => {
-    const matchCategory = category === "All" || p.category?.toLowerCase() === category.toLowerCase();
+    const matchCategory =
+      category === "All" || p.category?.toLowerCase() === category.toLowerCase();
     const matchSearch =
       p.title?.toLowerCase().includes(search.toLowerCase()) ||
       p.desc?.toLowerCase().includes(search.toLowerCase());
@@ -40,7 +40,9 @@ export default function Marketplace() {
 
   return (
     <section className="container py-20">
-      <h1 className="text-5xl font-extrabold text-center text-purple-700 mb-12">Marketplace 🛍</h1>
+      <h1 className="text-5xl font-extrabold text-center text-purple-700 mb-12">
+        Marketplace 🛍
+      </h1>
 
       {/* Search */}
       <div className="flex justify-center mb-10">

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../config";   // <-- import backend URL
 
 export default function OtpLogin() {
   const [email, setEmail] = useState("");
@@ -7,14 +8,11 @@ export default function OtpLogin() {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
-  // Read backend URL from .env
-  const API_BASE = import.meta.env.VITE_BACKEND_URL;
-
   const sendOtp = async () => {
     if (!email) return alert("Enter email");
 
     try {
-      const res = await fetch(`${API_BASE}/api/send-otp`, {
+      const res = await fetch(`${API_BASE_URL}/api/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -37,7 +35,7 @@ export default function OtpLogin() {
     if (!userOtp) return alert("Enter OTP");
 
     try {
-      const res = await fetch(`${API_BASE}/api/verify-otp`, {
+      const res = await fetch(`${API_BASE_URL}/api/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: userOtp }),
